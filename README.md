@@ -1,5 +1,3 @@
-PA Bridge Analysis — README
-
 Project overview
 ----------------
 This project ingests National Bridge Inventory (NBI) records for Pennsylvania, cleans and normalizes the data, stores a cleaned table in SQLite, exposes a small REST API (FastAPI) for queries, and provides a lightweight Leaflet-based frontend for visual exploration.
