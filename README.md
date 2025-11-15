@@ -119,7 +119,7 @@ API endpoints (examples)
 - Nearby search (naive bounding box): `GET /api/bridges/nearby?lat={lat}&lon={lon}&radius_km={r}`
   - Example:
     ```powershell
-    Invoke-RestMethod -Uri '"http://127.0.0.1:8000/api/bridges/nearby?lat=40.5&lon=-79.9&radius_km=5"'
+    Invoke-RestMethod -Uri 'http://127.0.0.1:8000/api/bridges/nearby?lat=39.72&lon=-77.30&radius_km=1'
     ```
 
 - Condition stats by year: `GET /api/stats/condition/year/{year}`
