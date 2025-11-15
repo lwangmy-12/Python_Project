@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PA Bridge Information Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="navbar">PA Bridge Information Dashboard</div>
+
+<div class="controls">
+    <input id="searchId" type="text" placeholder="Search Bridge ID"/>
+    <button onclick="searchBridge()">Search</button>
+
+    <select id="yearSelect" onchange="reloadMap()">
+        <option>2025</option>
+        <option>2024</option>
+        <option>2023</option>
+        <option>2022</option>
+        <option>2021</option>
+        <option>2020</option>
+        <option>2019</option>
+    </select>
+
+    <select id="condSelect" onchange="reloadMap()">
+        <option value="all">All Conditions</option>
+        <option value="good">Good (7–9)</option>
+        <option value="fair">Fair (5–6)</option>
+        <option value="poor">Poor (0–4)</option>
+    </select>
+
+    <button onclick="reloadMap()">Apply Filters</button>
+</div>
+
+
+<div class="main-layout">
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+
+    <div id="chartBox">
+        <h4 id="chartTitle">Bridge Condition Chart</h4>
+        <canvas id="condChart"></canvas>
+    </div>
+</div>
+
+</div>
+
+
+<div id="legend" class="legend">
+    <b>Condition Legend</b><br>
+    <i style="background:green"></i> Good (7–9)<br>
+    <i style="background:orange"></i> Fair (5–6)<br>
+    <i style="background:red"></i> Poor (0–4)<br>
+    <i style="background:gray"></i> Unknown<br>
+</div>
+
+
+<div id="bridgeDetail" class="detail-panel">
+    <h3>Bridge Details</h3>
+    <table id="detailTable"></table>
+</div>
+
+<div class="note">
+    <h4>Field Explanation</h4>
+    <p><b>ADT_029</b> — Average Daily Traffic</p>
+    <p><b>DECK_COND_058</b> — Deck Condition Rating (0–9)</p>
+    <p><b>YEAR_BUILT_027</b> — Year the bridge was originally built</p>
+    <p><b>DATA_YEAR</b> — NBI inspection data reporting year</p>
+</div>
+
+
+<script src="script.js"></script>
+</body>
+</html>

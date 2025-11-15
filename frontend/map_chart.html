@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body style="margin:0; background:transparent;">
+<canvas id="chart" width="350" height="260"></canvas>
+
+<script>
+fetch("http://127.0.0.1:8000/api/stats/condition/year/2025")
+    .then(r => r.json())
+    .then(data => {
+        new Chart(document.getElementById("chart"), {
+            type: "bar",
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: "Count",
+                    data: data.values,
+                    backgroundColor: "#6699ff"
+                }]
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
