@@ -95,7 +95,7 @@ function updateDetailTable(b) {
     const table = document.getElementById("detailTable");
     table.innerHTML = "";
 
-    const highlightFields = ["DECK_COND_058", "ADT_029", "YEAR_BUILT_027", "DATA_YEAR"];
+    const highlightFields = ["STRUCTURE_NUMBER_008", "DECK_COND_058", "ADT_029", "YEAR_BUILT_027", "DATA_YEAR"];
 
     for (let key in b) {
         let highlight = highlightFields.includes(key) ? "highlight" : "";
@@ -160,6 +160,13 @@ function updateChart(counts, selectedYear) {
     }
 
     let ctx = document.getElementById("condChart").getContext("2d");
+    // Update external chart title
+    try {
+        const titleEl = document.getElementById('chartTitle');
+        if (titleEl) titleEl.textContent = `Bridge Condition Chart (Year: ${selectedYear})`;
+    } catch (e) {
+        console.error("Error updating chart title:", e);
+    }
 
     window.conditionChart = new Chart(ctx, {
         type: "bar",
@@ -175,9 +182,7 @@ function updateChart(counts, selectedYear) {
             responsive: true,
             plugins: {
                 title: {
-                    display: true,
-                    text: `Bridge Condition Chart (Year: ${selectedYear})`,
-                    font: { size: 16 }
+                    display: false
                 },
                 legend: { display: true }
             },
