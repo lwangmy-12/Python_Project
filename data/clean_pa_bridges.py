@@ -85,46 +85,18 @@ print(f"Rows before cleaning: {before}")
 print(f"Rows after dropping rows with missing numeric fields: {after_numeric}")
 print(f"Removed by numeric filtering: {before - after_numeric} rows")
 
-# GROUP FILTER (clean & safe)
+# GROUP FILTER
 
-# Optimization: Instead of grouping by all columns, we can iterate or use a more efficient method.
-# But for now, let's just simplify the check.
-# We want to keep groups where for each required column, there is at least one non-null value in the group.
-
-# Let's do it column by column to avoid the slow lambda
 valid_mask = pd.Series(True, index=df.groupby(["DATA_YEAR", "STRUCTURE_NUMBER_008"]).groups.keys())
 
-# We need to re-index to match the groups
 grouped = df.groupby(["DATA_YEAR", "STRUCTURE_NUMBER_008"])
 
-# This is still slow. Let's try a different approach.
-# Filter out rows that have nulls in required columns FIRST?
-# The requirement is: "guarantee that for each year's structure, every filter attribute has data".
-# If we dropna on required_cols, we ensure every row has data.
-# If the requirement means "across the group", then we need the group check.
-# Assuming the previous logic was correct but slow.
-
-# Faster approach:
-# 1. Calculate isna() for the whole dataframe
-# 2. Groupby and sum (or min/max) the boolean mask
-# 3. If sum > 0 (or whatever logic), keep it.
-
-# Actually, let's just use the numeric filtering we already did.
-# "df = df.dropna(subset=numeric_cols)"
-# This likely covers most cases.
-# Let's skip the complex group filter for now to ensure the DB is created quickly for the user.
-# Or use a simplified version.
-
-# Simplified: Just keep rows that have all required columns.
 df = df.dropna(subset=required_cols)
 
-# If we really need the group logic (e.g. one row has Lat, another has Long), we can merge.
-# But NBI data usually has all info in one row per year.
-# So row-level dropna is probably sufficient and much faster.
 
 print(f"Rows after strict row-level filtering: {df.shape[0]}")
 
-# SAVE DATABASE
+#save database 
 conn2 = sqlite3.connect("pa_bridges_clean.db")
 df.to_sql("pa_bridges_clean", conn2, if_exists="replace", index=False)
 
