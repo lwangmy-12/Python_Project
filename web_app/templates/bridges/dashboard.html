@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="info-panel">
+    <h2>Welcome to the PA Bridge Information Dashboard</h2>
+    <p>This application provides an interactive visualization of highway bridge conditions across Pennsylvania based on NBI data.</p>
+    
+    <h3>How to Use This Dashboard:</h3>
+    <ul>
+        <li><strong>Filter by Year:</strong> Use the dropdown menu below to view data from different years.</li>
+        <li><strong>Explore the Map:</strong> 
+            <ul>
+                <li><span style="color:green; font-weight:bold;">● Green</span>: Good Condition (Deck Rating ≥ 7)</li>
+                <li><span style="color:orange; font-weight:bold;">● Orange</span>: Fair Condition (Deck Rating 5-6)</li>
+                <li><span style="color:red; font-weight:bold;">● Red</span>: Poor Condition (Deck Rating < 5)</li>
+            </ul>
+        </li>
+        <li><strong>View Details:</strong> Click on any bridge marker on the map to see a popup with its ID and condition. Click the <em>"View Details"</em> link in the popup to access the full bridge profile page.</li>
+        <li><strong>Submit Feedback:</strong> On the detail page, you can submit maintenance reports or general feedback for specific bridges.</li>
+        <li><strong>Export Data:</strong> Use the "Export to Excel" button to download the currently filtered dataset.</li>
+    </ul>
+</div>
+
+<div class="controls">
+    <form method="get" style="display: inline;">
+        <label for="year">Select Year:</label>
+        <select name="year" id="year" onchange="this.form.submit()">
+            {% for year in years %}
+            <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+            {% endfor %}
+        </select>
+    </form>
+    <a href="{% url 'export_bridges' %}?year={{ selected_year }}" class="btn" style="float: right;">Export to Excel</a>
+</div>
+
+<div class="row" style="display: flex; flex-wrap: wrap;">
+    <div style="flex: 2; min-width: 300px; padding-right: 20px;">
+        <h3>Bridge Map ({{ selected_year }})</h3>
+        <div id="map" class="map-container"></div>
+    </div>
+    <div style="flex: 1; min-width: 300px;">
+        <h3>Condition Statistics</h3>
+        <canvas id="condChart"></canvas>
+        <div style="margin-top: 20px;">
+            <p>Total Bridges: {{ total_bridges }}</p>
+        </div>
+    </div>
+</div>
+
+{{ cond_stats|json_script:"cond-data" }}
+
+<script>
+    // Map Initialization
+    var map = L.map('map').setView([40.8, -77.8], 7);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    // Add Legend
+    var legend = L.control({position: 'bottomright'});
+    legend.onAdd = function (map) {
+        var div = L.DomUtil.create('div', 'legend');
+        div.innerHTML += '<h4>Condition</h4>';
+        div.innerHTML += '<i style="background: green"></i> Good (>=7)<br>';
+        div.innerHTML += '<i style="background: orange"></i> Fair (5-6)<br>';
+        div.innerHTML += '<i style="background: red"></i> Poor (<5)<br>';
+        return div;
+    };
+    legend.addTo(map);
+
+    // Fetch Map Data
+    fetch("{% url 'map_data' %}?year={{ selected_year }}")
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(bridge => {
+                if (bridge.latitude && bridge.longitude) {
+                    var color = 'gray';
+                    var cond = parseInt(bridge.deck_cond);
+                    if (cond >= 7) color = 'green';
+                    else if (cond >= 5) color = 'orange';
+                    else if (cond >= 0) color = 'red';
+
+                    var marker = L.circleMarker([bridge.latitude, bridge.longitude], {
+                        radius: 5,
+                        fillColor: color,
+                        color: "#000",
+                        weight: 1,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    }).addTo(map);
+                    
+                    marker.bindPopup(`
+                        <b>${bridge.structure_number}</b><br>
+                        ${bridge.features_desc || 'No Desc'}<br>
+                        Condition: ${bridge.deck_cond}<br>
+                        <a href="/bridge/${bridge.id}/">View Details</a>
+                    `);
+                }
+            });
+        });
+
+    // Chart Initialization
+    var ctx = document.getElementById('condChart').getContext('2d');
+    var chartData = JSON.parse(document.getElementById('cond-data').textContent);
+    var labels = chartData.map(d => d.deck_cond || 'Unknown');
+    var data = chartData.map(d => d.count);
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: '# of Bridges',
+                data: data,
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+{% endblock %}
