@@ -21,10 +21,8 @@ def dashboard(request):
         except ValueError:
             pass
     
-    # Limit for map performance, or use API for map data
-    # For the initial load, maybe just send some stats or a subset
-    
-    # Condition stats for chart
+   
+    #condition stats for chart
     cond_stats = bridges.values('deck_cond').annotate(count=Count('deck_cond')).order_by('deck_cond')
     
     context = {
@@ -39,12 +37,12 @@ def map_data(request):
     year = request.GET.get('year')
     bridges = Bridge.objects.all()
     
-    # Filter by year only if it's a valid number and not "None"
+    #filter by year only if it's a valid number and not "None"
     if year and year != 'None':
         try:
             bridges = bridges.filter(data_year=int(year))
         except ValueError:
-            pass # Ignore invalid year
+            pass #ignore invalid year
     
     # Return JSON for Leaflet
     data = list(bridges.values('id', 'structure_number', 'latitude', 'longitude', 'deck_cond', 'features_desc'))
@@ -86,7 +84,7 @@ def export_bridges(request):
     if year:
         bridges = bridges.filter(data_year=year)
         
-    for bridge in bridges[:5000]: # Limit to avoid timeout for this demo
+    for bridge in bridges[:5000]: #limit to avoid timeout for this demo
         ws.append([
             bridge.structure_number,
             bridge.data_year,
