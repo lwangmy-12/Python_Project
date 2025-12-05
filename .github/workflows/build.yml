@@ -26,9 +26,11 @@ jobs:
     - name: Run Tests
       run: |
         cd web_app
+        # Set DJANGO_SETTINGS_MODULE explicitly for pytest
+        export DJANGO_SETTINGS_MODULE=pa_bridges_project.settings
         pytest
 
     - name: Build Docker image
       run: |
-        cd web_app
-        docker build . --file Dockerfile --tag pa-bridges-app:latest
+        # Build from root context
+        docker build . --file web_app/Dockerfile --tag pa-bridges-app:latest
