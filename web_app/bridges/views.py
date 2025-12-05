@@ -15,8 +15,11 @@ def dashboard(request):
         selected_year = years[0]
     
     bridges = Bridge.objects.all()
-    if selected_year:
-        bridges = bridges.filter(data_year=selected_year)
+    if selected_year and selected_year != 'None':
+        try:
+            bridges = bridges.filter(data_year=int(selected_year))
+        except ValueError:
+            pass
     
     # Limit for map performance, or use API for map data
     # For the initial load, maybe just send some stats or a subset
@@ -35,8 +38,13 @@ def dashboard(request):
 def map_data(request):
     year = request.GET.get('year')
     bridges = Bridge.objects.all()
-    if year:
-        bridges = bridges.filter(data_year=year)
+    
+    # Filter by year only if it's a valid number and not "None"
+    if year and year != 'None':
+        try:
+            bridges = bridges.filter(data_year=int(year))
+        except ValueError:
+            pass # Ignore invalid year
     
     # Return JSON for Leaflet
     data = list(bridges.values('id', 'structure_number', 'latitude', 'longitude', 'deck_cond', 'features_desc'))
