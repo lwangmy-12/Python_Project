@@ -1,90 +1,114 @@
 # PA Bridge Information Dashboard
 
-## Overview
-This project is a Django-based web application for analyzing and visualizing Pennsylvania bridge data. It provides an interactive dashboard with maps and charts, detailed bridge information, a feedback submission system, and data export capabilities.
+![Build Status](https://github.com/lwangmy-12/Python_Project/actions/workflows/build.yml/badge.svg)
 
-## Requirements Met
-- **Django Web Application**: Built using Django 5.0+.
-- **Form/Data Submission**: Users can submit feedback/reviews for individual bridges.
-- **Dashboard**: Interactive Leaflet map and Chart.js visualization of bridge conditions.
-- **Admin Interface**: Standard Django admin enabled.
-- **Models**: Two models: `Bridge` (bridge data) and `Feedback` (user reviews).
-- **Data Export**: Export filtered bridge data to XLSX format.
-- **Documentation**: This README explains all features.
-- **Git Repository**: Project is version controlled.
-- **Release**: Tagged as a release.
-- **ERD**: See Database Schema section below.
-- **Portable**: Dockerized application.
-- **CI/CD**: GitHub Actions workflow for building and testing.
-- **Testing**: Tests implemented using `pytest-django`.
+**Live Demo**: [https://python-project-pa-bridge.onrender.com](https://python-project-pa-bridge.onrender.com)
 
-## Database Schema (ERD)
-The application uses two main entities:
+## 1. Project Overview
+This project is a full-stack web application designed to monitor and visualize the structural health of highway bridges in Pennsylvania. Utilizing the National Bridge Inventory (NBI) dataset, it provides engineers and the public with an interactive tool to assess infrastructure conditions.
 
-1. **Bridge**: Stores NBI bridge data (Structure Number, Location, Condition, Year, etc.).
-2. **Feedback**: Stores user reviews linked to a specific Bridge.
+The application is built with **Django** and features a responsive dashboard that integrates **Leaflet.js** for geospatial mapping and **Chart.js** for statistical analysis. It includes a complete data pipeline, from raw data ingestion to a user-friendly frontend, and is fully containerized for portability.
+
+## 2. Key Features
+*   **Interactive Dashboard**:
+    *   **Geospatial Map**: Visualizes bridge locations with color-coded markers indicating condition (Green=Good, Orange=Fair, Red=Poor).
+    *   **Data Filtering**: Allows users to filter bridge data by inspection year.
+    *   **Statistical Charts**: Displays real-time bar charts of bridge deck conditions.
+*   **Bridge Detail & Feedback**:
+    *   Detailed view of individual bridge specifications (Location, Length, Material, etc.).
+    *   **User Feedback System**: A form allowing users to submit maintenance reports or comments, which are stored in the database.
+*   **Data Management**:
+    *   **Excel Export**: One-click export of filtered datasets to `.xlsx` format.
+    *   **Admin Interface**: Full backend management for Bridges and Feedback records.
+*   **DevOps & Engineering**:
+    *   **Dockerized**: Fully portable development environment.
+    *   **CI/CD**: Automated testing and building via GitHub Actions.
+    *   **Cloud Deployment**: Deployed on Render.com.
+
+## 3. Database Schema (ERD)
+The application uses a relational database with two primary entities:
 
 ```mermaid
 erDiagram
-    BRIDGE ||--o{ FEEDBACK : has
+    BRIDGE ||--o{ FEEDBACK : "receives"
     BRIDGE {
-        string structure_number
+        string structure_number PK
         int data_year
         string location
         float latitude
         float longitude
         string deck_cond
-        ...
+        string county_code
     }
     FEEDBACK {
+        int id PK
         string name
-        string email
         int rating
         string comment
         datetime created_at
+        int bridge_id FK
     }
 ```
 
-## Setup & Installation
+## 4. How to Run (Usage Guide)
 
-### Using Docker (Recommended)
-1. Ensure Docker and Docker Compose are installed.
-2. Build and run the container:
-   ```bash
-   cd web_app
-   docker-compose up --build
-   ```
-3. Access the application at `http://localhost:8000`.
+### Option A: Live Demo (Cloud Deployment)
+Simply visit the deployed application:
+👉 **[https://python-project-pa-bridge.onrender.com](https://python-project-pa-bridge.onrender.com)**
+*(Note: The free tier server may take ~50 seconds to wake up on first access.)*
 
-### Manual Setup
-1. Create a virtual environment and install dependencies:
-   ```bash
-   cd web_app
-   pip install -r requirements.txt
-   ```
-2. Run migrations:
-   ```bash
-   python manage.py migrate
-   ```
-3. Import data (ensure `data/pa_bridges_clean.db` exists):
-   ```bash
-   python manage.py import_bridges
-   ```
-4. Run the server:
-   ```bash
-   python manage.py runserver
-   ```
+### Option B: Local Docker Setup (Recommended)
+This ensures the environment matches exactly what was developed.
 
-## Features
-- **Dashboard**: Filter bridges by year, view on map, see condition statistics.
-- **Bridge Details**: Click on a map marker or use the search to view details.
-- **Feedback**: Submit ratings and comments on bridge detail pages.
-- **Export**: Download the currently filtered dataset as an Excel file.
-- **Admin**: Manage bridges and feedback via `/admin`.
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/lwangmy-12/Python_Project.git
+    cd Python_Project
+    ```
 
-## Testing
-Run tests using pytest:
+2.  **Run with Docker Compose**:
+    ```bash
+    cd web_app
+    docker-compose up --build
+    ```
+
+3.  **Access the App**:
+    Open your browser and go to `http://localhost:8000`.
+
+### Option C: Manual Local Setup
+1.  Install dependencies: `pip install -r web_app/requirements.txt`
+2.  Run migrations: `python web_app/manage.py migrate`
+3.  Import data: `python web_app/manage.py import_bridges`
+4.  Start server: `python web_app/manage.py runserver`
+
+## 5. Testing & CI/CD
+
+### Local Testing
+To verify the application logic locally, run the test suite:
+
+**Using Docker (Preferred):**
+```bash
+cd web_app
+docker-compose exec web pytest
+```
+
+**Using Local Python:**
 ```bash
 cd web_app
 pytest
 ```
+
+### GitHub Actions
+This repository includes a CI/CD pipeline (`.github/workflows/build.yml`) that automatically:
+1.  Sets up a Python environment.
+2.  Installs dependencies.
+3.  Runs the full `pytest` suite.
+4.  Builds the Docker image to ensure portability.
+
+You can view the build status by clicking the "Actions" tab in the GitHub repository.
+
+## 6. Deployment Details
+The application is deployed on **Render.com** using Docker.
+*   **Build Process**: The `Dockerfile` handles dependency installation, database migration, and data importation automatically on startup.
+*   **Static Files**: Served efficiently using `Whitenoise`.
+
