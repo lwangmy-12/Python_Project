@@ -9,11 +9,21 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # Path to the existing clean database
-        # Assuming the command is run from web_app directory
-        db_path = os.path.join(settings.BASE_DIR.parent, 'data', 'pa_bridges_clean.db')
+        # In Docker, we mount/copy data to /data
+        # Locally, it might be in ../data
+        
+        # Check /data first (Docker production path)
+        db_path = '/data/pa_bridges_clean.db'
+        if not os.path.exists(db_path):
+            # Fallback to local development path
+            db_path = os.path.join(settings.BASE_DIR.parent, 'data', 'pa_bridges_clean.db')
         
         if not os.path.exists(db_path):
             self.stdout.write(self.style.ERROR(f'Database not found at {db_path}'))
+            # List directories to help debug
+            self.stdout.write(f'Current dir: {os.getcwd()}')
+            if os.path.exists('/data'):
+                self.stdout.write(f'/data contents: {os.listdir("/data")}')
             return
 
         self.stdout.write(f'Connecting to {db_path}...')
