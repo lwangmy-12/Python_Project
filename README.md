@@ -54,7 +54,7 @@ erDiagram
 
 ### Option A: Live Demo (Cloud Deployment)
 Simply visit the deployed application:
-👉 **[https://python-project-pa-bridge.onrender.com](https://python-project-pa-bridge.onrender.com)**
+**[https://python-project-pa-bridge.onrender.com](https://python-project-pa-bridge.onrender.com)**
 *(Note: The free tier server may take ~50 seconds to wake up on first access.)*
 
 ### Option B: Local Docker Setup (Recommended)
