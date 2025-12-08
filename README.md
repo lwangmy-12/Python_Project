@@ -57,29 +57,22 @@ Simply visit the deployed application:
 **[https://python-project-pa-bridge.onrender.com](https://python-project-pa-bridge.onrender.com)**
 *(Note: The free tier server may take 2-3 minutes to wake up on first access.)*
 
-### Option B: Local Docker Setup
-This ensures the environment matches exactly what was developed.
+### Option B: Run with Docker Package
+You can run the application directly using the pre-built image from GitHub Container Registry.
 
-1.  **Clone the repository**:
+1.  **Pull the image**:
     ```bash
-    git clone https://github.com/lwangmy-12/Python_Project.git
-    cd Python_Project
+    docker pull ghcr.io/lwangmy-12/pa-bridges-app:latest
     ```
 
-2.  **Run with Docker Compose**:
+2.  **Run the container**:
     ```bash
-    cd web_app
-    docker-compose up --build
+    docker run -p 8000:8000 ghcr.io/lwangmy-12/pa-bridges-app:latest
     ```
 
 3.  **Access the App**:
     Open your browser and go to `http://localhost:8000`.
 
-### Option C: Manual Local Setup
-1.  Install dependencies: `pip install -r web_app/requirements.txt`
-2.  Run migrations: `python web_app/manage.py migrate`
-3.  Import data: `python web_app/manage.py import_bridges`
-4.  Start server: `python web_app/manage.py runserver`
 
 ## 5. Testing & CI/CD
 
