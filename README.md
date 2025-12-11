@@ -7,7 +7,10 @@
 ## 1. Project Overview
 This project is a full-stack web application designed to monitor and visualize the structural health of highway bridges in Pennsylvania. Utilizing the National Bridge Inventory (NBI) dataset, it provides engineers and the public with an interactive tool to assess infrastructure conditions.
 
-The application is built with **Django** and features a responsive dashboard that integrates **Leaflet.js** for geospatial mapping and **Chart.js** for statistical analysis. It includes a complete data pipeline, from raw data ingestion to a user-friendly frontend, and is fully containerized for portability.
+The application is built with **Django** and features a responsive dashboard that integrates **Leaflet.js** for geospatial mapping and **Chart.js** for statistical analysis. It includes a complete data pipeline, from raw data ingestion to a user-friendly frontend, and is fully containerized for portability.  
+
+Reference: Federal Highway Administration. (2025). National Bridge Inventory ASCII Files. U.S. Department of Transportation. Retrieved from https://www.fhwa.dot.gov/bridge/nbi/ascii.cfm
+
 
 ## 2. Key Features
 *   **Interactive Dashboard**:
